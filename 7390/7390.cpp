@@ -9,7 +9,6 @@ void disp2DArr(short x, short y, arrType ** &arr);
 void getFirstOneCoords(char** chr, short r, short c, short &oneRow, short &oneCol);
 bool checkIfPossible(char** chr, short r, short c, short oneRow);
 
-
 void solution () {
 	// Variable declaration
 	short r,c;
@@ -66,10 +65,6 @@ int main() {
 	std::cin >> t;
 	for (short i = 0; i < t; i++) solution();
 }
-
-
-
-
 
 template <class arrType>
 void init2DArr(short r, short c, arrType ** &arr) {
