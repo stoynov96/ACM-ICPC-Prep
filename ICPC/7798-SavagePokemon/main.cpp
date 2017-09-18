@@ -3,6 +3,7 @@
 #include <list>
 #include <stack>
 using namespace std;
+
 typedef vector<list<int>> adjList;
 
 /* Returns an adjacency list with reversed directed edges */
