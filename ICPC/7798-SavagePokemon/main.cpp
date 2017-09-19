@@ -3,85 +3,66 @@
 #include <list>
 #include <stack>
 using namespace std;
-
 typedef vector<list<int>> adjList;
 
-/* Returns an adjacency list with reversed directed edges */
-adjList transpose(adjList &trails, int numSections) {
-	adjList invTrails(numSections);	// Inversed trails
-	for (int v = 0; v < numSections; v++) {
-		list<int>::iterator it;
-
-		/* Edges put backwards */
-		for (it = trails[v].begin(); it != trails[v].end(); it++)
-			invTrails[*it].push_back(v);
+void set_false(bool*& visited, unsigned int numSections) {
+	for (int i = 0; i < numSections; i++) {
+		visited[i] = false;
 	}
-
-	return invTrails;
 }
 
-/* Depth First Search through adjacency list with stack tracking*/
-void dfsStack(int section, vector<bool> &visited, stack<int> &stack, adjList &trails) {
+void dfs(adjList& trails, bool*& visited, unsigned int section) {
 	visited[section] = true;
-
-	/* Recursively iterate as deep as possible */
 	list<int>::iterator it;
 	for (it = trails[section].begin(); it != trails[section].end(); it++)
 		if (!visited[*it])
-			dfsStack(*it, visited, stack, trails);
+			dfs(trails, visited, *it);
+}
 
-	/* This node is finished (All children visited) */
+void dfs_order(stack<int>& stack, adjList& trails, bool*& visited, unsigned int section) {
+	visited[section] = true;
+	list<int>::iterator it;
+	for (it = trails[section].begin(); it != trails[section].end(); it++)
+		if (!visited[*it])
+			dfs_order(stack, trails, visited, *it);
+
 	stack.push(section);
 }
 
-/* Depth First Search through adjacency list */
-/* Returns number of nodes traversed through */
-int dfs(int section, vector<bool> &visited, adjList &trails, int &count) {
-	visited[section] = true;
-
-	/* Recursively iterate as deep as possible */
-	list<int>::iterator it;
-	for (it = trails[section].begin(); it != trails[section].end(); it++)
-		if (!visited[*it])
-			dfs(*it, visited, trails, ++count);
-	return count;
-}
-
 int main() {
-	int T, numSections, numConnections, x, y;
+	unsigned int T, numSections, numConnections, x, y, i;
 	cin >> T;
+	if (T <= 0) return 0;
 	while (T--) {
 		cin >> numSections >> numConnections;
-		adjList trails(numSections);
-		vector<bool> visited(numSections);
+		int components = 0;
+		adjList trails(numSections), revTrails(numSections);
+		bool * visited = new bool[numSections]();
 		stack<int> stack;
 		bool cannotEscape = false;
 
-		/* Create adjacency list */
-		for (int i = 0; i < numConnections; i++) {
+		/* Create adjacency lists */
+		for (i = 0; i < numConnections; i++) {
 			cin >> x >> y;
 			trails[x].push_back(y);
+			revTrails[y].push_back(x);
 		}
 
-		/* Fill the stack based on completion time */
-		for (int i = 0; i < numSections; i++)
+		for (i = 0; i < numSections; i++)
 			if (!visited[i])
-				dfsStack(i, visited, stack, trails);
+				dfs_order(stack, trails, visited, i);
 
-		/* Create reversed graph */
-		adjList invTrails = transpose(trails, numSections);
+		set_false(visited, numSections);
 
-		/* Reset boolean array */
-		visited.clear();
-		visited.resize(numSections);
-
-		/* Process vertices in stack */
 		while (!stack.empty()) {
-			int v = stack.top(), count = 1;
+			int v = stack.top();
 			stack.pop();
-
 			if (!visited[v]) {
-				if (dfs(v, visited, invTrails, count) != numSections) {
+				dfs(revTrails, visited, v);
+				components++;
+				if (components != 1) {
+					while (!stack.empty())
+						stack.pop();
 					cannotEscape = true;
 					break;
 				}
