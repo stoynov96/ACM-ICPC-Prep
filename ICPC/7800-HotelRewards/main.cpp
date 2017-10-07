@@ -25,7 +25,7 @@ public:
 		for (i = 0; i < n; ++i)
 			cin >> prices[i];
 		
-		cout << minCost(n, k, (ll)prices[0], 1, prices+1) << endl;
+		cout << minCost(n, k, (ll)prices[0], 1, prices+1);
 
 
 		// Deallocate memory
@@ -36,7 +36,7 @@ public:
 	TODO: Add description
 	*/
 		if (currPoints < 0) return ULLONG_MAX;
-		// cout << *prices << ":\trSum= " << rSum << " \tp= " << currPoints << "\n";
+		cout << *prices << ":\trSum= " << rSum << " \tp= " << currPoints << "\n";
 		if (!*prices) return rSum;
 		return min (minCost(n, k, rSum+prices[0], currPoints+1, prices+1), minCost(n, k, rSum, currPoints-k, prices+1));
 	}
@@ -44,8 +44,11 @@ public:
 
 int main() {
 	ll n, k;
+	char el = '\0';
 	while (cin >> n) {
 		cin >> k;
+		cout << el;
+		el = '\n';
 		Solution::hotelRewards(n,k);
 	}
 }
