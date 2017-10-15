@@ -27,5 +27,9 @@ Finds the first divisor of a given number n
 	for (int i = 4; i <= endPoint; i++) {
 		if (! (n%i) ) return i;
 	}
+	if (n > 9) {
+		if (! (n%2)) return n/2;
+		if (! (n%3)) return n/3;
+	}
 	return n;
 }
