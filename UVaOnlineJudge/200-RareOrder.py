@@ -5,12 +5,19 @@ class Position:
         self.end = end
 
 
-# DEBUG
-def dumpdict(letters_dict):
-    print("Dumping dict with count = {0}".format(len(letters_dict)))
-    for data in letters_dict:
-        print('{0}: ({1}.{2})'.format(data, letters_dict[data].start, letters_dict[data].end))
 
+"""
+Main portion of the problem's solution. This shrinks the ranges of each letter
+until a specific ordered index is found (start of range equals end of range)
+
+Params:
+    orders_array:       array of 'orders'* - term explained below
+    letters_dict:       unordered set linking letters to their ranges
+
+Terminology:
+    *'order' - an order is a string in which all letters are oredered according to the 
+                language's rules    
+"""
 def shrink_ranges(orders_array, letters_dict):
 
     for order_string in orders_array:
@@ -26,10 +33,11 @@ def shrink_ranges(orders_array, letters_dict):
                 letters_dict[order_string[i]].start + 1 # second max parameter
                 )
 
-    # debug
-    # dumpdict(letters_dict)
 
-
+"""
+Creates a letters dictionary from an orders array.
+The initial range for each letter is 0 to (number_of_letters-1)
+"""
 def get_letters_dict(orders_array):
 
     letters_dict = {}
@@ -51,6 +59,10 @@ def get_letters_dict(orders_array):
     return letters_dict
 
 
+"""
+Transforms an array of orders to an alphabet - a string consisting of all
+unique letters in correct order (left to right)
+"""
 def get_order_string(orders_array):
 
     # Dictionary to store the letters start and end positions 
@@ -60,19 +72,41 @@ def get_order_string(orders_array):
     for i in range(len(letters_dict)):
         shrink_ranges(orders_array, letters_dict)
 
+    # Create an alphabet string from the letters dictionary
     ret_string = [''] * len(letters_dict)
     for key in letters_dict:
         ret_string[letters_dict[key].start] = key
 
     return ''.join(ret_string)
-    
 
 
+"""
+Converts a list of strings to an array of orders. Each element of that array is a string
+that is ordered according to the language's rules.
+Strings of length 1 are ignored because they do not hold any valuable information
+
+Example:
+An input of:        will be converted to ['XZY', 'YW']
+XWY
+ZX
+ZXY
+ZXW
+YWWX
+
+Params:
+    string_list:        List of original strings to be converted to orders arrays
+"""
 def get_orders_array(string_list, max_len):
 
+    # To return
     orders_array = []
+    # Index in original string (a.k.a column)
     ind = 0
+
+    # Endings indeces of 'groups'
+    # a 'group' is a collection of letters that are ordered in the input
     group_seperators = []
+    # Place in the group_seperators array of the next group ending index
     gs_next_ind = 0
 
     while ind < max_len:
@@ -80,19 +114,14 @@ def get_orders_array(string_list, max_len):
         c_char = '*'
         this_order = []
         gs_next_ind = 0
-
-        # print("ind =", ind) # debug
         
         for i in range(len(string_list)):
             s = string_list[i]
 
+            # if group seperator is marked, it should not be marked again later
             marked_gs = False
 
-            # Clear if new group
-            # print("  i = {0}, s = {1}".format(i,s)) # debug
-            # print("  gseperators:", group_seperators) # debug
-            # print("  gs_next_ind:", gs_next_ind) # debug
-            # print()
+            # Mark a group seperator and clean variables to start a new order
             if gs_next_ind < len(group_seperators) and group_seperators[gs_next_ind] == i:
                 if len(this_order) > 1: orders_array.append(this_order)
                 c_char = "*"
@@ -147,11 +176,7 @@ while s != '#':
 del string_list[-1]
 
 # === Transform input into usable form ===
-# orders_array = ['XZYK', 'WK', 'XAK', 'XWZ', 'XAW']
-# orders_array = ['XZY', 'YW']
 orders_array = get_orders_array(string_list, max_len)
-
-# print('orders_array:', orders_array)
 
 # === Solve Problem ===
 print(get_order_string(orders_array))
